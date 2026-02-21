@@ -1,31 +1,72 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/layout/Layout';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 space-y-4">
-        <h1 className="text-3xl font-bold text-center text-indigo-600">
-          PrimeTread AI
-        </h1>
-        <p className="text-gray-600 text-center">
-          Full-Stack Environment Ready
-        </p>
-        <div className="flex justify-between items-center pt-4">
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-medium text-gray-400 uppercase">Frontend</span>
-            <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Vite + React</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-medium text-gray-400 uppercase">Styling</span>
-            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">TailwindCSS</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-medium text-gray-400 uppercase">Backend</span>
-            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">Express.js</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Shared Tasks Route (Placeholder) */}
+          <Route
+            path="/tasks"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div className="max-w-5xl mx-auto">
+                    <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
+                    <p className="text-gray-500 mt-1">Manage your active projects.</p>
+                    <div className="mt-8 p-12 bg-white rounded-xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">
+                      <p>Tasks board coming soon...</p>
+                    </div>
+                  </div>
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Profile Route (Placeholder) */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <div className="max-w-5xl mx-auto">
+                    <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+                    <p className="text-gray-500 mt-1">Manage your account settings.</p>
+                  </div>
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Redirects */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
