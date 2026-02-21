@@ -1,16 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, CheckSquare, User, LogOut, Search, PlusCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import TaskModal from '../tasks/TaskModal';
 
 const Layout = ({ children }) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleLogout = async () => {
         await logout();
         navigate('/login');
+    };
+
+    const handleTaskCreated = () => {
+        // Refresh page or trigger a refresh in children if needed
+        // For now, window reload is simplest to ensure all views update
+        window.location.reload();
     };
 
     const menuItems = [
@@ -34,8 +42,8 @@ const Layout = ({ children }) => {
                             key={item.label}
                             to={item.path}
                             className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${location.pathname === item.path
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-600 hover:bg-[#E3E3E0]'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:bg-[#E3E3E0]'
                                 }`}
                         >
                             <item.icon size={18} />
@@ -76,7 +84,10 @@ const Layout = ({ children }) => {
                             className="bg-transparent border-none focus:outline-none text-sm w-full"
                         />
                     </div>
-                    <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
                         <PlusCircle size={18} />
                         New Task
                     </button>
@@ -87,8 +98,15 @@ const Layout = ({ children }) => {
                     {children}
                 </div>
             </main>
+
+            <TaskModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onTaskCreated={handleTaskCreated}
+            />
         </div>
     );
 };
+
 
 export default Layout;
